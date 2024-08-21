@@ -1,25 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import { requestFCMToken } from './firebase/firebase';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [fcmToken, setFcmToken] = useState(null);
+
+    useEffect(() => {
+        const fetchFCMToken = async () => {
+            try {
+                const token = await requestFCMToken();
+                setFcmToken(token);
+            } catch (err) {
+                console.error('Error getting FCM token: ', err);
+            }
+        };
+
+        fetchFCMToken();
+    }, []);
+
+    return (
+        <div className="App">
+            {fcmToken ? <p>FCM Token: {fcmToken}</p> : <p>Loading FCM Token...</p>}
+        </div>
+    );
 }
 
 export default App;
